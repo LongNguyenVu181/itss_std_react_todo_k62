@@ -19,7 +19,7 @@ import useStorage from '../hooks/storage';
 import {getKey} from "../lib/util";
 
 function Todo() {
-  const [items, addItem] = React.useState([
+  const [items, addItem,updateItem] = React.useState([
       /* テストコード 開始 */
     { key: getKey(), text: '日本語の宿題', done: false },
     { key: getKey(), text: 'reactを勉強する', done: false },
@@ -29,6 +29,23 @@ function Todo() {
   
   const [filter, setFilter] = React.useState('ALL');
   
+    const displayItems = items.filter(item => {
+    if (filter === 'ALL') return true;
+    if (filter === 'TODO') return !item.done;
+    if (filter === 'DONE') return item.done;
+  });
+  
+    const handleCheck = checked => {
+    // const newItems = items.map(item => {
+    //   if (item.key === checked.key) {
+    //     item.done = !item.done;
+    //   }
+    //   return item;
+    // });
+    // putItems(newItems);
+    updateItem(checked);
+  };
+  
   const handleAdd = text => {
     // putItems([...items, { key: getKey(), text, done: false }]);
     addItem({ text, done: false });
@@ -36,25 +53,36 @@ function Todo() {
   
   const handleFilterChange = value => setFilter(value);
   return (
-    <div className="panel">
+    <article class="panel is-danger">
       <div className="panel-heading">
-        ITSS ToDoアプリ
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-calendar-check"></i>
+          </span>
+          <span> ITSS Todoアプリ</span>
+        </span>
+      </div>
       <Input onAdd={handleAdd} />
       <Filter
         onChange={handleFilterChange}
         value={filter}
       />
-      </div>
-      {items.map(item => (
-        <TodoItem
-          key={item.key}
+      {displayItems.map(item => (
+        <TodoItem 
+          key={item.id}
           item={item}
+          onCheck={handleCheck}
         />
       ))}
       <div className="panel-block">
-        {items.length} items
+        {displayItems.length} items
       </div>
-    </div>
+      <div className="panel-block">
+        <button className="button is-light is-fullwidth" onClick={clearItems}>
+          全てのToDoを削除
+        </button>
+      </div>
+    </article>
   );
 }
 
